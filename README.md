@@ -1,4 +1,4 @@
-# GoLang Sample
+# Health Check Docker
 
 ## https://www.youtube.com/watch?v=LJvEIjRBSDA
 ### This song made me study Golang.
