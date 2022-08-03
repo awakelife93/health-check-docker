@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
-
-	"github.com/awakelife93/health-check-docker/utils"
 )
 
 func GetExitedContainers() (string, error) {
@@ -27,7 +25,7 @@ func GetExitedContainers() (string, error) {
 		return "", commandError
 	}
 
-	if utils.IsStringAndNotEmpty(error.String()) {
+	if error.String() != "" {
 		return "", errors.New(error.String())
 	}
 
