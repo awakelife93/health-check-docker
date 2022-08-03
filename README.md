@@ -1,9 +1,10 @@
 # Health Check Docker
 
-## https://www.youtube.com/watch?v=LJvEIjRBSDA
-### This song made me study Golang.
-
 ## [Note]
+
+```
+1. study & learn golang
+```
 
 ### Description
 
