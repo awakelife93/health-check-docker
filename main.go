@@ -7,13 +7,18 @@ import (
 	"github.com/awakelife93/health-check-docker/worker"
 )
 
-func start() {
-	fmt.Println("Start docker container health check.")
+func clear() {
+	fmt.Println("Clear scheduler")
+	worker.ClearScheduler()
+}
 
+func work() {
+	fmt.Println("Start docker container health check.")
 	exitedContainersString, error := worker.GetExitedContainers()
 
 	if error != nil {
 		fmt.Println(error.Error())
+		clear()
 	}
 
 	worker.CheckExitedContainer(
@@ -21,6 +26,10 @@ func start() {
 	)
 
 	fmt.Println("End docker container health check.")
+}
+
+func start() {
+	worker.StartScheduler(30, 10, work)
 }
 
 func main() {
