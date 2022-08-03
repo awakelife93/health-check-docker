@@ -29,9 +29,9 @@ func StartScheduler(second time.Duration, delay time.Duration, action func()) ch
 
 	for {
 		select {
-		case <-time.After(delay):
+		// case <-time.After(delay):
 		case <-ticker.C:
-			go action()
+			action()
 		case <-quitChannel:
 			ticker.Stop()
 			return quitChannel
