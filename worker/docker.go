@@ -32,9 +32,21 @@ func GetExitedContainers() (string, error) {
 	return output.String(), nil
 }
 
-// todo: 체크 후 어떤 처리를 해줘야할 지? 고민해보기.
-func CheckExitedContainer(exitedContainers []string) {
+func ExitedContainerReport(exitedContainers []string) (string, error) {
 	for i := 0; i < len(exitedContainers); i++ {
-		fmt.Println(exitedContainers[i])
+		row := exitedContainers[i]
+		response, error := SendMessage(row)
+
+		if error != nil {
+			fmt.Println("ExitedContainerReport error =>", error.Error())
+
+			if error.Error() == "not_authed" {
+				return "Failed.", error
+			}
+		}
+
+		fmt.Println("Report response = ", response)
 	}
+
+	return "Completed successfully.", nil
 }
