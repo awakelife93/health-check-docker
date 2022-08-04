@@ -17,6 +17,15 @@ func quitIntervalAction() bool {
 	return quit
 }
 
+func clearTicker() {
+	fmt.Println("Quit interval Action = ", quitIntervalAction())
+	ticker = nil
+}
+
+func clearIntervalChannel() {
+	quitChannel = nil
+}
+
 func StartScheduler(second time.Duration, delay time.Duration, action func()) chan bool {
 	var defaultSecond time.Duration = 30
 	if second < defaultSecond {
@@ -39,16 +48,7 @@ func StartScheduler(second time.Duration, delay time.Duration, action func()) ch
 	}
 }
 
-func ClearTicker() {
-	fmt.Println("Quit interval Action = ", quitIntervalAction())
-	ticker = nil
-}
-
-func ClearIntervalChannel() {
-	quitChannel = nil
-}
-
 func ClearScheduler() {
-	ClearTicker()
-	ClearIntervalChannel()
+	clearTicker()
+	clearIntervalChannel()
 }
