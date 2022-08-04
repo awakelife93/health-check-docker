@@ -27,13 +27,9 @@ func clearIntervalChannel() {
 }
 
 func StartScheduler(second time.Duration, delay time.Duration, action func()) chan bool {
-	var defaultSecond time.Duration = 30
-	if second < defaultSecond {
-		second = defaultSecond
-	}
-
 	ticker = time.NewTicker(second * time.Second)
 
+	// * first call
 	action()
 
 	for {
