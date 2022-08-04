@@ -14,18 +14,29 @@ func clear() {
 
 func work() {
 	fmt.Println("Start docker container health check.")
-	exitedContainersString, error := worker.GetExitedContainers()
 
-	if error != nil {
-		fmt.Println(error.Error())
+	exitedContainersString, GetExitedContainersError := worker.GetExitedContainers()
+
+	if GetExitedContainersError != nil {
+		fmt.Println(GetExitedContainersError.Error())
 		clear()
 	}
 
-	worker.CheckExitedContainer(
-		utils.GenerateExitedContainerList(exitedContainersString),
-	)
+	exitedContainers, GenerateExitedContainerListError := utils.GenerateExitedContainerList(exitedContainersString)
 
-	fmt.Println("End docker container health check.")
+	if GenerateExitedContainerListError != nil {
+		fmt.Println(GenerateExitedContainerListError.Error())
+		clear()
+	}
+
+	output, ExitedContainerReportError := worker.ExitedContainerReport(exitedContainers)
+
+	if ExitedContainerReportError != nil {
+		fmt.Println(ExitedContainerReportError.Error())
+		clear()
+	}
+
+	fmt.Println("End docker container health check.", output)
 }
 
 func start() {
