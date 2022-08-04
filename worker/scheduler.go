@@ -23,7 +23,7 @@ func StartScheduler(second time.Duration, delay time.Duration, action func()) ch
 		second = defaultSecond
 	}
 
-	ticker := time.NewTicker(second * time.Second)
+	ticker = time.NewTicker(second * time.Second)
 
 	action()
 
