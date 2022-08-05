@@ -1,52 +1,63 @@
 package worker
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"os/exec"
+	"strings"
+
+	"github.com/awakelife93/health-check-docker/utils"
+	"github.com/thoas/go-funk"
 )
 
-func GetExitedContainers() (string, error) {
-	arg0 := "docker"
-	arg1 := "ps"
-	arg2 := "-a"
-	arg3 := "-f"
-	arg4 := "status=exited"
+func restartContainer(row string) (bool, error) {
+	requireContainerIds := utils.GetRestartContainerIds()
 
-	command := exec.Command(arg0, arg1, arg2, arg3, arg4)
-	var output, error bytes.Buffer
-	command.Stdout = &output
-	command.Stderr = &error
-
-	commandError := command.Run()
-
-	if commandError != nil {
-		return "", commandError
+	if funk.IsEmpty(row) || funk.IsEmpty(requireContainerIds) {
+		return false, errors.New("Failed Restart Container funk.IsEmpty(row) || funk.IsEmpty(requireContainerIds)")
 	}
 
-	if error.String() != "" {
-		return "", errors.New(error.String())
-	}
+	column := strings.Fields(row)
+	containerId := column[0]
 
-	return output.String(), nil
-}
+	if funk.ContainsString(requireContainerIds, containerId) {
+		output, startContainerError := utils.StartContainer(containerId)
 
-func ExitedContainerReport(exitedContainers []string) (string, error) {
-	for i := 0; i < len(exitedContainers); i++ {
-		row := exitedContainers[i]
-		response, error := SendMessage(row)
-
-		if error != nil {
-			fmt.Println("ExitedContainerReport error =>", error.Error())
-
-			if error.Error() == "not_authed" {
-				return "Failed.", error
-			}
+		if startContainerError != nil {
+			return false, startContainerError
 		}
 
-		fmt.Println("Report response = ", response)
+		fmt.Println("Success Restart Container => ", output, containerId)
+		return true, nil
 	}
 
-	return "Completed successfully.", nil
+	return false, nil
+}
+
+func ExitedContainerReportAndRestart(exitedContainers []string) error {
+	for i := 0; i < len(exitedContainers); i++ {
+		row := exitedContainers[i]
+
+		slackResponse, slackApiError := SendMessage(row)
+
+		isRestart, restartError := restartContainer(row)
+
+		if restartError != nil {
+			fmt.Println("ExitedContainerReportAndRestart Restart error =>", restartError.Error())
+		}
+
+		fmt.Println("Restart action => ", isRestart)
+
+		if slackApiError != nil {
+
+			if slackApiError.Error() == "not_authed" {
+				return slackApiError
+			}
+
+			fmt.Println("ExitedContainerReportAndRestart Slack error =>", slackApiError.Error())
+		}
+
+		fmt.Println("Report response => ", slackResponse)
+	}
+
+	return nil
 }
