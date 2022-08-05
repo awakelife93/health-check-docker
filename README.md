@@ -10,6 +10,7 @@
 
 ```
 1. Detect terminated containers and take appropriate action.
+2. When a status abnormality is detected, a message is sent to slack
 ```
 
 ## Author
