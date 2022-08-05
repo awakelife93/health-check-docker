@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/awakelife93/health-check-docker/utils"
 	"github.com/awakelife93/health-check-docker/worker"
@@ -13,34 +14,34 @@ func clear() {
 }
 
 func work() {
-	fmt.Println("Start docker container health check.")
+	fmt.Println("Start docker container health check.", time.Now().UTC())
 
-	exitedContainersString, GetExitedContainersError := worker.GetExitedContainers()
+	exitedContainersString, getExitedContainersError := utils.GetExitedContainers()
 
-	if GetExitedContainersError != nil {
-		fmt.Println(GetExitedContainersError.Error())
+	if getExitedContainersError != nil {
+		fmt.Println("getExitedContainersError", getExitedContainersError.Error())
 		clear()
 	}
 
-	exitedContainers, GenerateExitedContainerListError := utils.GenerateExitedContainerList(exitedContainersString)
+	exitedContainers, generateExitedContainerListError := utils.GenerateExitedContainerList(exitedContainersString)
 
-	if GenerateExitedContainerListError != nil {
-		fmt.Println(GenerateExitedContainerListError.Error())
+	if generateExitedContainerListError != nil {
+		fmt.Println("generateExitedContainerListError", generateExitedContainerListError.Error())
 		clear()
 	}
 
-	output, ExitedContainerReportError := worker.ExitedContainerReport(exitedContainers)
+	exitedContainerReportError := worker.ExitedContainerReportAndRestart(exitedContainers)
 
-	if ExitedContainerReportError != nil {
-		fmt.Println(ExitedContainerReportError.Error())
+	if exitedContainerReportError != nil {
+		fmt.Println("exitedContainerReportError", exitedContainerReportError.Error())
 		clear()
 	}
 
-	fmt.Println("End docker container health check.", output)
+	fmt.Println("End docker container health check.")
 }
 
 func start() {
-	worker.StartScheduler(30, 10, work)
+	worker.StartScheduler(3, work)
 }
 
 func main() {

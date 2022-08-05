@@ -6,13 +6,11 @@ import (
 	"github.com/slack-go/slack"
 )
 
-// * slack channel id
-var channelId string = ""
-
-// * slack sdk object
+// * Just pass the token over.
 var api = slack.New("")
 
 func SendMessage(message string) (string, error) {
+	const channelId string = ""
 
 	channelID, timestamp, error := api.PostMessage(
 		channelId,
